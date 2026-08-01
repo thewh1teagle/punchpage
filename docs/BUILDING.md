@@ -12,8 +12,8 @@ Run `just` to list all recipes (build, lint, test, e2e, demo, …). Without `jus
 
 ## Layout
 
-Go host in `cmd/` + `internal/`, TypeScript client in `web/` (Vite, strict TS), e2e suite in `e2e/`. The client deploys to GitHub Pages automatically on pushes touching `web/`.
+Go host in `cmd/punch` + `internal/` (the binary is `punch`), TypeScript client in `web/` (Vite, strict TS), e2e suite in `e2e/`. The client deploys to GitHub Pages automatically on pushes touching `web/`.
 
 ## Releasing
 
-Tag and push: `git tag vX.Y.Z && git push --tags`. GoReleaser builds binaries for macOS/Linux/Windows (amd64 + arm64) and publishes a GitHub Release that the install scripts in `scripts/` download.
+Tag and push: `git tag vX.Y.Z && git push --tags`. GoReleaser builds binaries for macOS/Linux/Windows (amd64 + arm64) and publishes a GitHub Release with archives named `punch_<os>_<arch>` that the install scripts in `scripts/` download.

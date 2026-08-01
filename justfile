@@ -2,9 +2,9 @@
 default:
     @just --list
 
-# Build the punchpage binary
+# Build the punch binary
 build:
-    go build -o punchpage ./cmd/punchpage
+    go build -o punch ./cmd/punch
 
 # Run all tests (unit + end-to-end)
 test: test-go test-e2e
@@ -29,10 +29,14 @@ web:
 typecheck:
     pnpm -C web typecheck
 
-# Share a local origin (default http://127.0.0.1:3000)
-run target="http://127.0.0.1:3000":
-    go run ./cmd/punchpage --target {{target}}
+# Preview the site (landing page + client) at http://127.0.0.1:5173
+site:
+    pnpm -C web install && pnpm -C web dev --host 127.0.0.1
+
+# Share a local origin (port, host:port, or URL — default 3000)
+run target="3000":
+    go run ./cmd/punch {{target}}
 
 # Share the built-in demo site — open the printed link in any browser
 demo:
-    go run ./cmd/punchpage demo
+    go run ./cmd/punch demo

@@ -18,7 +18,7 @@ case "$arch" in
   *) echo "unsupported architecture: $arch" >&2; exit 1 ;;
 esac
 
-url="https://github.com/$REPO/releases/latest/download/punchpage_${os}_${arch}.tar.gz"
+url="https://github.com/$REPO/releases/latest/download/punch_${os}_${arch}.tar.gz"
 bin_dir="${PUNCHPAGE_INSTALL_DIR:-$HOME/.local/bin}"
 mkdir -p "$bin_dir"
 
@@ -27,10 +27,10 @@ trap 'rm -rf "$tmp"' EXIT
 
 echo "Downloading $url"
 curl -fsSL "$url" | tar -xz -C "$tmp"
-install -m 755 "$tmp/punchpage" "$bin_dir/punchpage"
+install -m 755 "$tmp/punch" "$bin_dir/punch"
 
-echo "Installed punchpage to $bin_dir/punchpage"
-"$bin_dir/punchpage" --help >/dev/null 2>&1 || true
+echo "Installed punch to $bin_dir/punch"
+"$bin_dir/punch" --help >/dev/null 2>&1 || true
 
 case ":$PATH:" in
   *":$bin_dir:"*) ;;

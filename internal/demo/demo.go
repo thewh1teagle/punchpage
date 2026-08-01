@@ -2,7 +2,7 @@
 // tunnel feature (fetch, redirects, large downloads, uploads, cookies, SSE
 // streaming, and WebSockets) and reports "ALL CHECKS PASSED" once each probe
 // succeeds. The
-// binary embeds it for `punchpage demo`, and the e2e suite serves it as the
+// binary embeds it for `punch demo`, and the e2e suite serves it as the
 // test fixture.
 package demo
 
@@ -28,20 +28,18 @@ const page = `<!doctype html>
 <style>
 :root{
   color-scheme:light dark;
-  --bg:#f4f4f6;--glow:rgba(99,102,241,.07);
-  --panel:rgba(255,255,255,.82);--line:rgba(17,19,27,.08);
-  --text:#16181f;--muted:#5d6370;--faint:#868c99;
-  --accent:#4f46e5;--accent-soft:rgba(79,70,229,.16);
+  --bg:#ffffff;--glow:rgba(109,40,217,.10);
+  --panel:#ffffff;--line:#e6e6e9;
+  --text:#0b0b0c;--muted:#3f3f46;--faint:#71717a;
+  --accent:#6d28d9;--accent-soft:rgba(109,40,217,.16);
   --bad:#b3261e;
-  --shadow:0 1px 1px rgba(17,19,27,.03),0 4px 10px rgba(17,19,27,.04),0 18px 44px rgba(17,19,27,.08);
 }
 @media (prefers-color-scheme:dark){:root{
-  --bg:#101116;--glow:rgba(129,140,248,.08);
-  --panel:rgba(24,26,33,.86);--line:rgba(255,255,255,.09);
-  --text:#eceef2;--muted:#a3a9b7;--faint:#767d8c;
-  --accent:#a5b0fb;--accent-soft:rgba(129,140,248,.18);
-  --bad:#f2a8a3;
-  --shadow:0 1px 1px rgba(0,0,0,.25),0 6px 16px rgba(0,0,0,.3),0 24px 60px rgba(0,0,0,.42);
+  --bg:#0b0b0d;--glow:rgba(167,139,250,.13);
+  --panel:#121216;--line:rgba(255,255,255,.11);
+  --text:#fafafa;--muted:#c9c9d1;--faint:#8b8b95;
+  --accent:#a78bfa;--accent-soft:rgba(167,139,250,.18);
+  --bad:#f0a9a4;
 }}
 body{
   margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
@@ -51,18 +49,13 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 main{
-  position:relative;max-width:400px;width:90%;box-sizing:border-box;padding:36px 32px 26px;
-  border:1px solid var(--line);border-radius:18px;background:var(--panel);
-  box-shadow:var(--shadow);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  position:relative;max-width:420px;width:90%;box-sizing:border-box;padding:34px 30px 24px;
+  border:1px solid var(--line);border-radius:12px;background:var(--panel);
   overflow:hidden;animation:card-in .5s cubic-bezier(.22,1,.36,1) both;
 }
-main::before{
-  content:"";position:absolute;inset:0 0 auto;height:1px;
-  background:linear-gradient(90deg,transparent 8%,var(--accent-soft) 50%,transparent 92%);
-}
 @keyframes card-in{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
-h1{margin:0 0 6px;font-size:17px;font-weight:600;letter-spacing:-.015em}
-h1 b{font-weight:600;color:var(--accent)}
+h1{margin:0 0 6px;font-size:19px;font-weight:700;letter-spacing:-.025em;color:var(--text)}
+h1 b{font-weight:700;color:var(--accent)}
 p.sub{margin:0 0 22px;color:var(--muted);font-size:13.5px;line-height:1.6}
 #result{
   margin:0 0 14px;font-size:13px;font-weight:600;letter-spacing:.09em;

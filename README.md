@@ -21,11 +21,13 @@ powershell -c "irm https://punchpage.pages.dev/install.ps1 | iex"
 ## Use
 
 ```sh
-punchpage --target http://127.0.0.1:3000   # share a local app
-punchpage demo                             # or try the built-in demo site
+punch 3000                    # share http://127.0.0.1:3000
+punch localhost:8080          # or a host:port
+punch http://localhost:8080   # or a full URL
+punch demo                    # or try the built-in demo site
 ```
 
-Send the printed link to anyone. Their browser connects straight to your machine over WebRTC — requests, uploads, cookies, SSE, and WebSockets all work. See `punchpage -h` for all flags.
+Send the printed link to anyone. Their browser connects straight to your machine over WebRTC — requests, uploads, cookies, SSE, and WebSockets all work. See `punch -h` for all flags.
 
 ## Docs
 

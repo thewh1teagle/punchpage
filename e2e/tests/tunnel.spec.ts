@@ -44,8 +44,8 @@ test('tunnels fetch, redirect, large, upload, cookie, sse, and websocket', async
   ]);
 
   const host = run('go', [
-    'run', './cmd/punchpage',
-    '--target', `http://127.0.0.1:${FIXTURE_PORT}`,
+    'run', './cmd/punch',
+    String(FIXTURE_PORT),
     '--page', `http://127.0.0.1:${CLIENT_PORT}/punchpage/`
   ]);
   const shareLink = await waitForLine(host, /http:\/\/127\.0\.0\.1:4188\/punchpage\/#r=\S+/, 'punchpage host');

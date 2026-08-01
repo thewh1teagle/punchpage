@@ -10,7 +10,7 @@ PunchPage tunnels a local HTTP origin to any browser with zero infrastructure of
 │  :3000        │                                     │                  │
 │      ▲        │                                     │  static client   │
 │      │        │        WebRTC data channel          │  loaded once     │
-│  punchpage    │◄═══════════════════════════════════►│  from GitHub     │
+│  punch        │◄═══════════════════════════════════►│  from GitHub     │
 │  host (Go)    │      direct, peer-to-peer,          │  Pages           │
 └───────┬───────┘      DTLS encrypted                 └────────┬─────────┘
         │                                                      │

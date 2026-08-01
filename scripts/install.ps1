@@ -4,18 +4,18 @@ $ErrorActionPreference = "Stop"
 
 $repo = "thewh1teagle/punchpage"
 $arch = if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -eq "Arm64") { "arm64" } else { "amd64" }
-$url = "https://github.com/$repo/releases/latest/download/punchpage_windows_$arch.zip"
+$url = "https://github.com/$repo/releases/latest/download/punch_windows_$arch.zip"
 
 $installDir = if ($env:PUNCHPAGE_INSTALL_DIR) { $env:PUNCHPAGE_INSTALL_DIR } else { Join-Path $env:LOCALAPPDATA "punchpage" }
 New-Item -ItemType Directory -Force -Path $installDir | Out-Null
 
-$zip = Join-Path $env:TEMP "punchpage.zip"
+$zip = Join-Path $env:TEMP "punch.zip"
 Write-Host "Downloading $url"
 Invoke-WebRequest -Uri $url -OutFile $zip
 Expand-Archive -Path $zip -DestinationPath $installDir -Force
 Remove-Item $zip
 
-Write-Host "Installed punchpage to $installDir\punchpage.exe"
+Write-Host "Installed punch to $installDir\punch.exe"
 
 $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
 if ($userPath -notlike "*$installDir*") {

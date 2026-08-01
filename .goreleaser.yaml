@@ -3,7 +3,8 @@ version: 2
 project_name: punchpage
 
 builds:
-  - main: ./cmd/punchpage
+  - main: ./cmd/punch
+    binary: punch
     env:
       - CGO_ENABLED=0
     goos: [linux, darwin, windows]
@@ -13,7 +14,7 @@ builds:
 
 archives:
   # Version-free names so install scripts can fetch latest/download/<file>.
-  - name_template: "punchpage_{{ .Os }}_{{ .Arch }}"
+  - name_template: "punch_{{ .Os }}_{{ .Arch }}"
     formats: [tar.gz]
     format_overrides:
       - goos: windows

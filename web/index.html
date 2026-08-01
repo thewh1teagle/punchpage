@@ -4,48 +4,85 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light dark">
+  <meta name="description" content="PunchPage shares a local web app through a plain browser URL — peer-to-peer over WebRTC, no account, end-to-end encrypted.">
   <title>PunchPage</title>
   <style>
+    /* ============================================================
+       Design tokens — light theme is primary, dark theme mirrored.
+       ============================================================ */
     :root {
-      --bg: #f4f4f6;
-      --bg-glow: rgba(99, 102, 241, 0.07);
-      --panel: rgba(255, 255, 255, 0.82);
-      --panel-border: rgba(17, 19, 27, 0.08);
-      --text: #16181f;
-      --muted: #5d6370;
-      --faint: #868c99;
-      --accent: #4f46e5;
-      --accent-soft: rgba(79, 70, 229, 0.16);
-      --track: rgba(17, 19, 27, 0.09);
+      color-scheme: light dark;
+
+      /* surfaces */
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --surface-2: #f5f5f6;
+      --border: #e6e6e9;        /* hairline */
+      --border-strong: #d3d3d8;
+
+      /* ink */
+      --text: #0b0b0c;          /* near-black headlines */
+      --body: #3f3f46;          /* comfortable dark gray */
+      --muted: #71717a;
+
+      /* accent — used sparingly */
+      --accent: #6d28d9;
+      --accent-strong: #5b21b6;
+      --accent-ink: #ffffff;
+
+      /* dark code panel: identical in both themes, the one strong contrast */
+      --code-bg: #17161c;
+      --code-bar: #1f1e26;
+      --code-border: rgba(255, 255, 255, 0.10);
+      --code-text: #f2f1f6;
+      --code-muted: rgba(242, 241, 246, 0.56);
+      --code-accent: #c4b5fd;
+
+      /* feedback */
       --error: #b3261e;
-      --error-soft: rgba(179, 38, 30, 0.09);
-      --error-border: rgba(179, 38, 30, 0.22);
-      --shadow:
-        0 1px 1px rgba(17, 19, 27, 0.03),
-        0 4px 10px rgba(17, 19, 27, 0.04),
-        0 18px 44px rgba(17, 19, 27, 0.08);
+      --error-border: rgba(179, 38, 30, 0.35);
+
+      --track: rgba(11, 11, 12, 0.10);
+      --wash: rgba(109, 40, 217, 0.10);
+
+      --radius: 10px;
+      --radius-lg: 12px;
+
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
     }
+
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #101116;
-        --bg-glow: rgba(129, 140, 248, 0.08);
-        --panel: rgba(24, 26, 33, 0.86);
-        --panel-border: rgba(255, 255, 255, 0.09);
-        --text: #eceef2;
-        --muted: #a3a9b7;
-        --faint: #767d8c;
-        --accent: #a5b0fb;
-        --accent-soft: rgba(129, 140, 248, 0.18);
-        --track: rgba(255, 255, 255, 0.1);
-        --error: #f2a8a3;
-        --error-soft: rgba(242, 168, 163, 0.08);
-        --error-border: rgba(242, 168, 163, 0.24);
-        --shadow:
-          0 1px 1px rgba(0, 0, 0, 0.25),
-          0 6px 16px rgba(0, 0, 0, 0.3),
-          0 24px 60px rgba(0, 0, 0, 0.42);
+        --bg: #0b0b0d;
+        --surface: #121216;
+        --surface-2: #1a1a1f;
+        --border: rgba(255, 255, 255, 0.11);
+        --border-strong: rgba(255, 255, 255, 0.20);
+
+        --text: #fafafa;
+        --body: #c9c9d1;
+        --muted: #8b8b95;
+
+        --accent: #a78bfa;
+        --accent-strong: #c4b5fd;
+        --accent-ink: #16111f;
+
+        --code-bg: #121016;
+        --code-bar: #191720;
+
+        --error: #f0a9a4;
+        --error-border: rgba(240, 169, 164, 0.32);
+
+        --track: rgba(255, 255, 255, 0.14);
+        --wash: rgba(167, 139, 250, 0.13);
       }
     }
+
+    /* ============================================================
+       Base
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; }
 
     html, body {
       height: 100%;
@@ -53,11 +90,27 @@
       padding: 0;
     }
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      /* Flat base plus a soft tonal wash at the top so the page has depth
+         without reading as a colored gradient. */
+      background:
+        radial-gradient(70rem 40rem at 50% -10%, var(--wash), transparent 72%),
+        var(--bg);
+      background-attachment: fixed;
+      color: var(--body);
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.65;
       -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-wrap: break-word;
+    }
+
+    a { color: var(--accent); }
+
+    :where(a, button):focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      border-radius: 4px;
     }
 
     #site {
@@ -67,104 +120,62 @@
       height: 100%;
     }
 
+    /* ============================================================
+       Connection screen (#status) — same language as the landing page
+       ============================================================ */
     #status {
-      box-sizing: border-box;
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 24px;
-      background:
-        radial-gradient(52rem 34rem at 50% -12%, var(--bg-glow), transparent 68%),
-        var(--bg);
     }
 
     .card {
-      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       gap: 22px;
       width: 100%;
-      max-width: 384px;
-      box-sizing: border-box;
-      padding: 44px 36px 34px;
-      background: var(--panel);
-      border: 1px solid var(--panel-border);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      overflow: hidden;
-      animation: card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-    /* hairline sheen along the card's top edge */
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto;
-      height: 1px;
-      background: linear-gradient(90deg, transparent 8%, var(--accent-soft) 50%, transparent 92%);
-    }
-    @keyframes card-in {
-      from { opacity: 0; transform: translateY(10px) scale(0.985); }
-      to { opacity: 1; transform: none; }
+      max-width: 380px;
+      padding: 38px 30px 26px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
     }
 
     .wordmark {
       font-size: 17px;
-      font-weight: 600;
-      letter-spacing: -0.015em;
+      font-weight: 700;
+      letter-spacing: -0.02em;
       color: var(--text);
     }
     .wordmark b {
-      font-weight: 600;
+      font-weight: 700;
       color: var(--accent);
     }
 
     .indicator {
-      position: relative;
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       display: grid;
       place-items: center;
     }
     .spinner {
-      box-sizing: border-box;
-      width: 38px;
-      height: 38px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
       border: 2.5px solid var(--track);
       border-top-color: var(--accent);
-      animation: spin 0.85s cubic-bezier(0.45, 0.15, 0.55, 0.85) infinite;
+      animation: spin 0.9s linear infinite;
     }
-    /* soft halo behind the spinner */
-    .indicator::before {
-      content: "";
-      position: absolute;
-      inset: -10px;
-      border-radius: 50%;
-      background: radial-gradient(circle, var(--accent-soft), transparent 70%);
-      animation: breathe 2.6s ease-in-out infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    @keyframes breathe {
-      0%, 100% { opacity: 0.55; }
-      50% { opacity: 1; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .spinner { animation-duration: 2.4s; animation-timing-function: linear; }
-      .indicator::before { animation: none; }
-      .card { animation: none; }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .error-icon {
       display: none;
-      width: 40px;
-      height: 40px;
+      width: 34px;
+      height: 34px;
       color: var(--error);
     }
 
@@ -172,30 +183,20 @@
       margin: 0;
       font-size: 15px;
       line-height: 1.6;
-      color: var(--muted);
+      color: var(--body);
       overflow-wrap: anywhere;
     }
 
     .hint {
-      margin: 6px 0 0;
+      margin: 0;
       padding-top: 18px;
       align-self: stretch;
-      border-top: 1px solid var(--panel-border);
-      font-size: 12.5px;
-      letter-spacing: 0.01em;
-      color: var(--faint);
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
     }
 
-    #status.error .card {
-      border-color: var(--error-border);
-    }
-    #status.error .card::before {
-      background: linear-gradient(90deg, transparent 8%, var(--error-border) 50%, transparent 92%);
-    }
-    #status.error .indicator::before {
-      background: radial-gradient(circle, var(--error-soft), transparent 70%);
-      animation: none;
-    }
+    #status.error .card { border-color: var(--error-border); }
     #status.error .spinner { display: none; }
     #status.error .error-icon { display: block; }
     #status.error #status-text {
@@ -203,6 +204,340 @@
       font-weight: 500;
     }
     #status.error .hint { display: none; }
+
+    /* ============================================================
+       Landing page
+       ============================================================ */
+    #landing[hidden] { display: none; }
+    body.landing-mode,
+    html:has(body.landing-mode) { height: auto; min-height: 100%; }
+
+    #landing {
+      min-height: 100%;
+      padding: 0 24px clamp(48px, 7vw, 80px);
+      /* transparent so the body's tonal wash shows through */
+    }
+    .shell {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* --- top bar --- */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .topbar-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 14.5px;
+      font-weight: 500;
+    }
+    .topbar-links a {
+      color: var(--body);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .topbar-links a:hover { color: var(--accent); }
+
+    /* --- hero --- */
+    .hero {
+      padding: clamp(56px, 11vw, 128px) 0 clamp(48px, 8vw, 96px);
+    }
+    .hero h1 {
+      margin: 0;
+      max-width: 14ch;
+      font-size: clamp(42px, 9vw, 76px);
+      font-weight: 800;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: var(--text);
+    }
+    .hero-sub {
+      margin: 26px 0 0;
+      max-width: 34ch;
+      font-size: clamp(18px, 2.6vw, 22px);
+      line-height: 1.5;
+      letter-spacing: -0.011em;
+      color: var(--accent);
+    }
+    .hero-lede {
+      margin: 18px 0 0;
+      max-width: 56ch;
+      font-size: 16.5px;
+      line-height: 1.7;
+      color: var(--body);
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 34px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      padding: 11px 22px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-ink);
+    }
+    .btn-primary:hover { background: var(--accent-strong); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* --- section headings --- */
+    .section {
+      padding: clamp(40px, 6vw, 64px) 0;
+      border-top: 1px solid var(--border);
+      scroll-margin-top: 16px;
+    }
+    .section h2 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 34px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .section-sub {
+      margin: 0 0 26px;
+      max-width: 52ch;
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--body);
+    }
+
+    /* --- install --- */
+    .terminal {
+      max-width: 720px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .terminal-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 10px;
+      background: var(--code-bar);
+      border-bottom: 1px solid var(--code-border);
+    }
+    .tabs {
+      display: inline-flex;
+      gap: 2px;
+    }
+    .tab {
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--code-muted);
+      background: transparent;
+      border: 0;
+      border-radius: 6px;
+      padding: 5px 11px;
+      cursor: pointer;
+      transition: color 0.15s ease, background-color 0.15s ease;
+    }
+    .tab:hover { color: var(--code-text); }
+    .tab[aria-pressed="true"] {
+      background: rgba(255, 255, 255, 0.09);
+      color: var(--code-text);
+    }
+    .copy {
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--code-text);
+      background: transparent;
+      border: 1px solid var(--code-border);
+      border-radius: 6px;
+      padding: 5px 14px;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .copy:hover { background: rgba(255, 255, 255, 0.09); }
+    .copy.copied {
+      color: var(--code-accent);
+      border-color: rgba(196, 181, 253, 0.45);
+    }
+    .terminal :where(.tab, .copy):focus-visible {
+      outline: 2px solid var(--code-accent);
+      outline-offset: 2px;
+    }
+
+    .command-box {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 18px 16px;
+    }
+    .command-box code {
+      display: block;
+      white-space: pre;
+      font-family: var(--mono);
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--code-text);
+    }
+    .command-box code::before {
+      content: "$ ";
+      color: var(--code-accent);
+    }
+
+    .then-run {
+      max-width: 68ch;
+      margin: 20px 0 0;
+      font-size: 15px;
+      line-height: 1.9;
+      color: var(--body);
+      overflow-wrap: anywhere;
+    }
+    .then-run code {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 2px 6px;
+      white-space: nowrap;
+    }
+
+    /* --- features --- */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 32px;
+      margin-top: 4px;
+    }
+    .feature {
+      min-width: 0;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .feature h3 {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      margin: 0 0 8px;
+      font-size: 16.5px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.4;
+      color: var(--text);
+    }
+    .feature h3 svg {
+      flex: none;
+      width: 15px;
+      height: 15px;
+      transform: translateY(2px);
+      color: var(--accent);
+    }
+    .feature p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--body);
+    }
+
+    /* --- footer --- */
+    .landing-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 20px;
+      padding-top: 26px;
+      border-top: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .landing-footer a {
+      color: var(--body);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+    .landing-footer a:hover { color: var(--accent); }
+    .footer-note { margin-left: auto; }
+
+    /* ============================================================
+       Responsive
+       ============================================================ */
+    @media (max-width: 760px) {
+      .features {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 26px;
+      }
+    }
+    @media (max-width: 520px) {
+      #landing { padding-left: 20px; padding-right: 20px; }
+      .topbar { gap: 12px; }
+      .topbar-links { gap: 16px; font-size: 14px; }
+      .hero h1 { max-width: none; }
+      .btn { width: 100%; }
+      .footer-note { margin-left: 0; }
+    }
+    /* below ~380px the longest inline command no longer fits on one line */
+    @media (max-width: 380px) {
+      .then-run code { white-space: normal; }
+    }
+
+    /* Ease the swap when the OS flips between light and dark. Scoped to the
+       properties that actually change so nothing else picks up a delay. */
+    body,
+    .site-header, .landing-nav a, .wordmark,
+    h1, h2, h3, p, .lede, .hero-sub,
+    .btn, .btn-secondary, .feature, .feature p, .then-run, .then-run code,
+    .command-panel, .command-bar, .command-box, .tab, .copy-btn,
+    .landing-footer, .footer-note,
+    #status, .status-card, .status-text, .status-hint, hr, .rule {
+      transition:
+        background-color 220ms ease,
+        border-color 220ms ease,
+        color 220ms ease,
+        fill 220ms ease;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+      .spinner {
+        animation: spin 2.4s linear infinite !important;
+        animation-duration: 2.4s !important;
+        animation-iteration-count: infinite !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -221,6 +556,86 @@
       <p class="hint">Peer-to-peer over WebRTC — no server in between</p>
     </div>
   </div>
+
+  <main id="landing" hidden>
+    <div class="shell">
+      <header class="topbar">
+        <div class="wordmark">Punch<b>Page</b></div>
+        <nav class="topbar-links" aria-label="Primary">
+          <a href="#install" data-scroll>Install</a>
+          <a href="https://github.com/thewh1teagle/punchpage/tree/main/docs" target="_blank" rel="noopener noreferrer">Docs</a>
+          <a href="https://github.com/thewh1teagle/punchpage" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </header>
+
+      <section class="hero">
+        <h1>Like ngrok, but peer-to-peer.</h1>
+        <p class="hero-sub">Share a local web app through a plain browser URL.</p>
+        <p class="hero-lede">No server sits in the middle, there is nothing to sign up for, and the whole session is end-to-end encrypted.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#install" data-scroll>Get started</a>
+          <a class="btn btn-ghost" href="https://github.com/thewh1teagle/punchpage" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+        </div>
+      </section>
+
+      <section class="section" id="install" aria-labelledby="install-heading">
+        <h2 id="install-heading">Install</h2>
+        <p class="section-sub">One command. No account, no daemon, no config file.</p>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <div class="tabs">
+              <button type="button" class="tab" id="tab-unix" aria-pressed="true">macOS / Linux</button>
+              <button type="button" class="tab" id="tab-windows" aria-pressed="false">Windows</button>
+            </div>
+            <button type="button" class="copy" id="copy-command">Copy</button>
+          </div>
+          <div class="command-box"><code id="install-command"></code></div>
+        </div>
+        <p class="then-run">Then run <code>punch 3000</code> to share port 3000 — or <code>punch demo</code> to try it with a sample site.</p>
+      </section>
+
+      <section class="section" aria-labelledby="why-heading">
+        <h2 id="why-heading">Why PunchPage</h2>
+        <p class="section-sub">A tunnel that stays between the two ends of the connection.</p>
+        <div class="features">
+          <article class="feature">
+            <h3>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12.5l5.5 5.5L20 6.5"></path>
+              </svg>
+              No server in between
+            </h3>
+            <p>Traffic goes straight from your machine to your visitor's browser over WebRTC.</p>
+          </article>
+          <article class="feature">
+            <h3>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12.5l5.5 5.5L20 6.5"></path>
+              </svg>
+              Nothing to sign up for
+            </h3>
+            <p>No account, no config — install it and share a link.</p>
+          </article>
+          <article class="feature">
+            <h3>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12.5l5.5 5.5L20 6.5"></path>
+              </svg>
+              End-to-end encrypted
+            </h3>
+            <p>The key lives in the URL fragment and never reaches any server.</p>
+          </article>
+        </div>
+      </section>
+
+      <footer class="landing-footer">
+        <a href="https://github.com/thewh1teagle/punchpage" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/thewh1teagle/punchpage/tree/main/docs" target="_blank" rel="noopener noreferrer">Docs</a>
+        <span class="footer-note">Open source · MIT</span>
+      </footer>
+    </div>
+  </main>
+
   <iframe id="site" sandbox="allow-downloads allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
   <script type="module" src="/src/main.ts"></script>
 </body>

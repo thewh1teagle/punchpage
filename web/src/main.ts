@@ -8,7 +8,8 @@ const DEFAULT_RELAYS = ['wss://relay.damus.io', 'wss://nos.lol', 'wss://relay.pr
 const OFFER_RESEND_INTERVAL_MS = 2500;
 const EXPECTED_SW_VERSION = '1';
 
-const fragment = new URLSearchParams(location.hash.slice(1));
+const hash = location.hash.replace(/^#/, '').trim();
+const fragment = new URLSearchParams(hash);
 const room = fragment.get('r');
 const keyText = fragment.get('k');
 const relays = (fragment.get('relays') || DEFAULT_RELAYS.join(','))
@@ -20,7 +21,10 @@ const clientToken = crypto.randomUUID();
 const appBase = new URL('./', location.href);
 const scopePath = appBase.pathname.endsWith('/') ? appBase.pathname : appBase.pathname + '/';
 
-if (!room || !keyText || relays.length === 0) {
+if (hash === '') {
+  // Plain root URL with no share fragment: this is the marketing/landing page.
+  void import('./landing').then(({showLanding}) => showLanding());
+} else if (!room || !keyText || relays.length === 0) {
   showError('This PunchPage link is incomplete. Ask the host for a fresh link.');
 } else {
   start(room, keyText).catch((error: Error) => showError('Connection failed: ' + error.message));
