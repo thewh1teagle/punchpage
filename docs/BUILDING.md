@@ -8,7 +8,7 @@
 
 ## Tasks
 
-Run `just` to list all recipes (build, lint, test, e2e, demo, …). Without `just`, the recipes are one-liners — see the `justfile`.
+Run `just` to list all recipes (build, lint, test, e2e, demo, …). Without `just`, the recipes are one-liners; see the `justfile`.
 
 ## Layout
 

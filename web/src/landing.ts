@@ -31,7 +31,7 @@ export function showLanding(): void {
   if (!landing) return;
   landing.hidden = false;
   document.body.classList.add('landing-mode');
-  document.title = 'PunchPage — like ngrok, but peer-to-peer';
+  document.title = 'PunchPage: like ngrok, but peer-to-peer';
 
   // A share link pasted into the address bar of an already-open landing page is a
   // same-document navigation, so reload to let main.ts pick the fragment up.

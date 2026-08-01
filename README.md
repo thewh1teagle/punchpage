@@ -1,8 +1,25 @@
-# PunchPage
+<div align="center">
 
-**Like ngrok, but peer-to-peer.** Share a local web app through a plain browser URL — no server, no account, end-to-end encrypted.
+<a href="https://punchpage.pages.dev">
+  <img src=".github/assets/logo.svg" width="76" alt="PunchPage">
+</a>
 
-![PunchPage demo](.github/assets/hero.gif)
+<h1>PunchPage</h1>
+
+<p>
+  <b>Like ngrok, but peer-to-peer.</b><br>
+  Share a local web app through a plain browser URL. Traffic goes straight between the two machines, end-to-end encrypted, with nothing to sign up for.
+</p>
+
+<p>
+  <a href="https://punchpage.pages.dev"><img alt="Website" src="https://img.shields.io/badge/website-punchpage.pages.dev-6d28d9?style=flat-square"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-6d28d9?style=flat-square"></a>
+  <a href="https://ko-fi.com/thewh1teagle"><img alt="Support on Ko-fi" src="https://img.shields.io/badge/Ko--fi-support-ff5e5b?style=flat-square&logo=ko-fi&logoColor=white"></a>
+</p>
+
+<img src=".github/assets/hero.gif" width="820" alt="PunchPage demo">
+
+</div>
 
 ## Install
 
@@ -21,35 +38,30 @@ powershell -c "irm https://punchpage.pages.dev/install.ps1 | iex"
 ## Use
 
 ```sh
-punch 3000                    # share http://127.0.0.1:3000
-punch localhost:8080          # or a host:port
-punch http://localhost:8080   # or a full URL
-punch demo                    # or try the built-in demo site
+punch 3000       # a port, a host:port, a full URL, or `demo`
 ```
 
-Send the printed link to anyone. Their browser connects straight to your machine over WebRTC — requests, uploads, cookies, SSE, and WebSockets all work. See `punch -h` for all flags.
+Send the printed link to anyone. Uploads, cookies, SSE and WebSockets all work. See `punch -h` for flags.
 
-Agent-ready — paste this to your AI assistant and it will do the rest:
+Using an AI assistant? Paste this:
 
 ```text
 Share my local app on port 3000 with PunchPage, then give me the link.
 Instructions: https://punchpage.pages.dev/llms.txt
 ```
 
-## What it's for
+## Scope
 
-Handing your localhost to a person: demos, design reviews, opening your app on your phone, sharing a dashboard with a colleague. The link dies when you stop `punch`, and end-to-end encryption means nothing in between can read the traffic.
+Good for handing your localhost to a person: demos, design reviews, your app on your phone. The link dies with the process.
 
-## What it's not for
-
-Being publicly reachable. No server in the middle means no public endpoint: webhooks, OAuth callbacks, and always-on hosting won't work — the visitor must be a browser. For those, use a relay-based tunnel like ngrok or cloudflared.
+Not for being publicly reachable. No server in the middle means no public endpoint, so webhooks, OAuth callbacks and hosting need ngrok or cloudflared instead.
 
 ## Docs
 
-- [Architecture](docs/ARCHITECTURE.md) — how the tunnel works
-- [Security](docs/SECURITY.md) — threat model and limitations
-- [Building](docs/BUILDING.md) — build and test from source
-- [Deployment](docs/DEPLOYMENT.md) — hosting, secrets, and releases
+- [Architecture](docs/ARCHITECTURE.md): how the tunnel works
+- [Security](docs/SECURITY.md): threat model and limitations
+- [Building](docs/BUILDING.md): build and test from source
+- [Deployment](docs/DEPLOYMENT.md): hosting, secrets, and releases
 
 ## License
 

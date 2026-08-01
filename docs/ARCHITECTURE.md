@@ -22,15 +22,15 @@ PunchPage tunnels a local HTTP origin to any browser with zero infrastructure of
 
 ## Flow
 
-1. The host generates a room id and a 32-byte key, and prints a share URL. Both live in the URL **fragment**, which browsers never send to the server — Cloudflare Pages sees nothing.
+1. The host generates a room id and a 32-byte key, and prints a share URL. Both live in the URL **fragment**, which browsers never send to the server, so Cloudflare Pages sees nothing.
 2. Host and client exchange WebRTC offer/answer/ICE candidates as AES-256-GCM-encrypted ephemeral Nostr events (kind 24242) on public relays.
 3. ICE (with public STUN) punches through NATs and opens a data channel directly between the two machines. Relays carry no site traffic.
 4. In the browser, a service worker intercepts every request under its scope and forwards it over the data channel as a JSON wire message; the host fetches from the local origin and streams the response back in chunks.
 
 ## Components
 
-- **Host** (`cmd/` + `internal/`) — Go CLI: encrypted Nostr signaling, WebRTC sessions (pion), and the bridge from the data channel to the local origin (HTTP with a cookie jar, WebSocket proxying, path-prefix rewriting of HTML/JS/CSS). Also embeds the demo site.
-- **Client** (`web/`) — TypeScript browser app: connection UI, signaling, a service worker that proxies requests over the data channel, and a runtime shim injected into tunneled pages that rewrites `fetch`/XHR/`EventSource` URLs and bridges `WebSocket`.
+- **Host** (`cmd/` + `internal/`), the Go CLI: encrypted Nostr signaling, WebRTC sessions (pion), and the bridge from the data channel to the local origin (HTTP with a cookie jar, WebSocket proxying, path-prefix rewriting of HTML/JS/CSS). Also embeds the demo site.
+- **Client** (`web/`), the TypeScript browser app: connection UI, signaling, a service worker that proxies requests over the data channel, and a runtime shim injected into tunneled pages that rewrites `fetch`/XHR/`EventSource` URLs and bridges `WebSocket`.
 
 ## Path prefix
 

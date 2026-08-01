@@ -129,6 +129,9 @@ type FrameInboundMessage = PrefixedSocketMessage<HostSocketMessage>;
   /** Rewrites localhost / same-origin absolute URLs onto the tunnel prefix. */
   const localURL = <T extends string | URL>(raw: T): T | string => {
     const url = new URL(String(raw), location.href);
+    // Already inside the prefix: rewriting again would nest it. This matters
+    // when the client itself is served from localhost, as it is in development.
+    if (prefix !== '' && url.pathname.startsWith(prefix + '/')) return raw;
     if (['localhost', '127.0.0.1'].includes(url.hostname)) return prefix + url.pathname + url.search + url.hash;
     if (url.origin === location.origin && url.pathname.startsWith('/') && !url.pathname.startsWith(prefix + '/')) {
       return prefix + url.pathname + url.search + url.hash;

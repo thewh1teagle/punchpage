@@ -6,8 +6,8 @@ How PunchPage ships: one push deploys the browser client and the install scripts
 
 The client is a static site (`web/dist`), deployed to two places on every push touching `web/`:
 
-- **[Cloudflare Pages](https://punchpage.pages.dev)** — the default. Served at the domain root, so the service worker's scope is `/` and no path-prefix rewriting is needed.
-- **[GitHub Pages](https://thewh1teagle.github.io/punchpage/)** — kept live so older share links keep working.
+- **[Cloudflare Pages](https://punchpage.pages.dev)** is the default. Served at the domain root, so the service worker's scope is `/` and no path-prefix rewriting is needed.
+- **[GitHub Pages](https://thewh1teagle.github.io/punchpage/)** is kept live so older share links keep working.
 
 The workflow copies `scripts/install.sh` and `scripts/install.ps1` into the site, so the installers live at `punchpage.pages.dev/install.sh` and `/install.ps1`.
 
