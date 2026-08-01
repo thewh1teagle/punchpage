@@ -29,6 +29,13 @@ punch demo                    # or try the built-in demo site
 
 Send the printed link to anyone. Their browser connects straight to your machine over WebRTC — requests, uploads, cookies, SSE, and WebSockets all work. See `punch -h` for all flags.
 
+Agent-ready — paste this to your AI assistant and it will do the rest:
+
+```text
+Share my local app on port 3000 with PunchPage, then give me the link.
+Instructions: https://punchpage.pages.dev/llms.txt
+```
+
 ## Docs
 
 - [Architecture](docs/ARCHITECTURE.md) — how the tunnel works

@@ -1,0 +1,65 @@
+# PunchPage
+
+> PunchPage shares a web app running on the user's machine through a plain browser URL. Like ngrok, but peer-to-peer: the visitor's browser connects directly to the sharer's machine over WebRTC, end-to-end encrypted. No account, no quota, no relay server carrying traffic. The CLI binary is named `punch`. MIT licensed.
+
+This file is for AI assistants helping a user install and run PunchPage. Everything needed is below; there is no separate API to configure and no signup step.
+
+## Install
+
+macOS / Linux:
+
+    curl -fsSL https://punchpage.pages.dev/install.sh | sh
+
+Windows (PowerShell):
+
+    powershell -c "irm https://punchpage.pages.dev/install.ps1 | iex"
+
+The installer places a single self-contained binary named `punch` on PATH. No Docker, no runtime dependencies. To install manually instead, download a release from https://github.com/thewh1teagle/punchpage/releases and put `punch` on PATH.
+
+## Usage
+
+    punch [target] [flags]
+
+Targets:
+
+    punch                        share http://127.0.0.1:3000 (the default)
+    punch 3000                   share http://127.0.0.1:3000
+    punch :3000                  same as above
+    punch localhost:8080         share http://localhost:8080
+    punch http://localhost:8080  share that URL as-is
+    punch demo                   share a built-in demo site (good for a first test)
+
+On start, punch prints a share link of the form `https://punchpage.pages.dev/#r=...`. Send that link to the visitor; opening it in any modern browser connects them directly to the sharer's machine. The process keeps running while shared; stop sharing with Ctrl+C.
+
+Flags are optional and normally not needed; run `punch -h` for the current list.
+
+## What works through the tunnel
+
+Regular requests, file uploads, cookies, redirects, Server-Sent Events, and WebSockets. The visitor needs no install and no account; only a WebRTC-capable browser.
+
+## How it works (short)
+
+1. `punch` generates a room id and an encryption key; the key travels only in the URL fragment (`#r=...`), which browsers never send to any server.
+2. Public Nostr relays are used once for signaling: the two peers exchange WebRTC session descriptions, encrypted with that key.
+3. The browser and the sharer's machine establish a direct WebRTC connection (with hole punching). All HTTP traffic then flows peer-to-peer over encrypted data channels. No relay or server sees the traffic.
+
+Details: https://github.com/thewh1teagle/punchpage/blob/main/docs/ARCHITECTURE.md
+
+## Security notes
+
+- Traffic is end-to-end encrypted (WebRTC DTLS plus the signaling-layer encryption).
+- Anyone who has the full share link can open the shared app; treat the link like a password and share it over a private channel.
+- The shared target is whatever the user points punch at; do not point it at apps that must not be reachable by the link's recipients.
+- Threat model and limitations: https://github.com/thewh1teagle/punchpage/blob/main/docs/SECURITY.md
+
+## Troubleshooting
+
+- Link prints but visitor cannot connect: usually a very restrictive NAT/firewall on one side blocking WebRTC. Try from a different network; `punch -h` lists options such as selecting a specific network interface.
+- Wrong app shared: check the target argument; `punch` with no target shares port 3000.
+- To test end-to-end without a local app, run `punch demo` and open the printed link.
+
+## Links
+
+- Website: https://punchpage.pages.dev
+- GitHub: https://github.com/thewh1teagle/punchpage
+- Docs: https://github.com/thewh1teagle/punchpage/tree/main/docs

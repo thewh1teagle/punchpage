@@ -1,6 +1,6 @@
 # Architecture
 
-PunchPage tunnels a local HTTP origin to any browser with zero infrastructure of its own: GitHub Pages serves the static client, public Nostr relays pass a few KB of encrypted signaling, and all site traffic flows peer-to-peer over WebRTC.
+PunchPage tunnels a local HTTP origin to any browser with zero infrastructure of its own: Cloudflare Pages serves the static client, public Nostr relays pass a few KB of encrypted signaling, and all site traffic flows peer-to-peer over WebRTC.
 
 ```
   YOUR MACHINE                                          VIEWER'S MACHINE
@@ -10,7 +10,7 @@ PunchPage tunnels a local HTTP origin to any browser with zero infrastructure of
 │  :3000        │                                     │                  │
 │      ▲        │                                     │  static client   │
 │      │        │        WebRTC data channel          │  loaded once     │
-│  punch        │◄═══════════════════════════════════►│  from GitHub     │
+│  punch        │◄═══════════════════════════════════►│  from Cloudflare │
 │  host (Go)    │      direct, peer-to-peer,          │  Pages           │
 └───────┬───────┘      DTLS encrypted                 └────────┬─────────┘
         │                                                      │
@@ -22,7 +22,7 @@ PunchPage tunnels a local HTTP origin to any browser with zero infrastructure of
 
 ## Flow
 
-1. The host generates a room id and a 32-byte key, and prints a share URL. Both live in the URL **fragment**, which browsers never send to the server — GitHub Pages sees nothing.
+1. The host generates a room id and a 32-byte key, and prints a share URL. Both live in the URL **fragment**, which browsers never send to the server — Cloudflare Pages sees nothing.
 2. Host and client exchange WebRTC offer/answer/ICE candidates as AES-256-GCM-encrypted ephemeral Nostr events (kind 24242) on public relays.
 3. ICE (with public STUN) punches through NATs and opens a data channel directly between the two machines. Relays carry no site traffic.
 4. In the browser, a service worker intercepts every request under its scope and forwards it over the data channel as a JSON wire message; the host fetches from the local origin and streams the response back in chunks.
