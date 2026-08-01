@@ -470,6 +470,12 @@
       text-underline-offset: 3px;
     }
 
+    .install-hint {
+      margin: 0;
+      padding: 0 16px 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
     .then-run {
       max-width: 68ch;
       margin: 20px 0 0;
@@ -700,6 +706,7 @@
             </button>
           </div>
           <div class="command-box"><code id="install-command"></code></div>
+          <p class="install-hint" id="install-hint" hidden>Run from a PowerShell window, not cmd.</p>
         </div>
         <p class="then-run">Then run <code>punch 3000</code> to share port 3000, or <code>punch demo</code> to try it with a sample site.</p>
       </section>

@@ -44,6 +44,7 @@ export function showLanding(): void {
   const unixTab = document.querySelector('#tab-unix') as HTMLButtonElement | null;
   const windowsTab = document.querySelector('#tab-windows') as HTMLButtonElement | null;
   const copyButton = document.querySelector('#copy-command') as HTMLButtonElement | null;
+  const hint = document.querySelector('#install-hint') as HTMLElement | null;
   if (!command || !unixTab || !windowsTab || !copyButton) return;
 
   let platform: Platform = detectPlatform();
@@ -61,6 +62,7 @@ export function showLanding(): void {
     );
     unixTab!.setAttribute('aria-pressed', String(next === 'unix'));
     windowsTab!.setAttribute('aria-pressed', String(next === 'windows'));
+    if (hint) hint.hidden = next !== 'windows';
   }
 
   unixTab.addEventListener('click', () => select('unix'));
