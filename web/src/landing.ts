@@ -39,6 +39,7 @@ export function showLanding(): void {
 
   wireScrollLinks();
   wireCopyButton('#copy-prompt', '#agent-prompt');
+  spinGlobe();
 
   const command = document.querySelector('#install-command') as HTMLElement | null;
   const unixTab = document.querySelector('#tab-unix') as HTMLButtonElement | null;
@@ -75,6 +76,124 @@ export function showLanding(): void {
   });
 
   select(platform);
+}
+
+/* ------------------------------------------------------------------ globe */
+
+const GLOBE = {
+  cx: 140,
+  cy: 140,
+  r: 92,
+  points: 820,
+  tilt: (-20 * Math.PI) / 180,   // north pole tipped toward the viewer
+  light: [-0.48, 0.56, 0.68],    // upper left, slightly in front
+  seconds: 78,                   // one revolution
+  fps: 30,
+  bands: 7                       // brightness steps, one <path> each
+} as const;
+
+/**
+ * Turns the hero globe. The markup ships a static frame of the same sphere, so
+ * this only takes over when motion is welcome; it swaps the ~390 individual
+ * dots for a few paths and rewrites those instead, which keeps a frame to a
+ * handful of attribute writes rather than a couple of thousand.
+ */
+function spinGlobe(): void {
+  const land = document.querySelector('.art-land') as SVGGElement | null;
+  if (!land) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const {cx, cy, r, points, tilt, seconds, fps, bands} = GLOBE;
+  const [lx, ly, lz] = GLOBE.light;
+  const lightLen = Math.hypot(lx, ly, lz);
+  const golden = Math.PI * (3 - Math.sqrt(5));
+
+  // unit sphere, Fibonacci spaced: even coverage with no ring banding
+  const base = new Float64Array(points * 3);
+  for (let i = 0; i < points; i++) {
+    const y = 1 - (2 * (i + 0.5)) / points;
+    const rad = Math.sqrt(Math.max(0, 1 - y * y));
+    const th = i * golden;
+    base[i * 3] = Math.cos(th) * rad;
+    base[i * 3 + 1] = y;
+    base[i * 3 + 2] = Math.sin(th) * rad;
+  }
+
+  land.textContent = '';
+  const paths: SVGPathElement[] = [];
+  for (let b = 0; b < bands; b++) {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('opacity', (0.07 + (0.63 * b) / (bands - 1)).toFixed(3));
+    land.appendChild(path);
+    paths.push(path);
+  }
+
+  const cosT = Math.cos(tilt);
+  const sinT = Math.sin(tilt);
+  const buffers: string[] = new Array<string>(bands).fill('');
+
+  function draw(angle: number): void {
+    buffers.fill('');
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+
+    for (let i = 0; i < base.length; i += 3) {
+      const x0 = base[i] as number;
+      const y0 = base[i + 1] as number;
+      const z0 = base[i + 2] as number;
+
+      const x = x0 * cosA + z0 * sinA;          // spin about the globe's axis
+      const zs = -x0 * sinA + z0 * cosA;
+      const y = y0 * cosT - zs * sinT;          // then tip toward the viewer
+      const z = y0 * sinT + zs * cosT;
+      if (z <= 0.05) continue;                  // facing away
+
+      const sx = cx + r * x;
+      const sy = cy - r * y;
+      const dot = 0.45 + Math.sqrt(z);          // foreshortened near the limb
+      const lambert = Math.max(0, (x * lx + y * ly + z * lz) / lightLen);
+      const band = Math.min(bands - 1, Math.round(Math.pow(lambert, 1.15) * (bands - 1)));
+
+      // a filled circle as two arcs, cheaper than one element per dot
+      buffers[band] +=
+        `M${sx.toFixed(1)} ${sy.toFixed(1)}m-${dot.toFixed(2)} 0` +
+        `a${dot.toFixed(2)} ${dot.toFixed(2)} 0 1 0 ${(dot * 2).toFixed(2)} 0` +
+        `a${dot.toFixed(2)} ${dot.toFixed(2)} 0 1 0 -${(dot * 2).toFixed(2)} 0`;
+    }
+
+    for (let b = 0; b < bands; b++) paths[b]?.setAttribute('d', buffers[b] ?? '');
+  }
+
+  let running = true;
+  let last = 0;
+  const frame = 1000 / fps;
+  const start = performance.now();
+
+  function tick(now: number): void {
+    if (!running) return;
+    if (now - last >= frame) {
+      last = now;
+      draw(((now - start) / (seconds * 1000)) * Math.PI * 2);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function setRunning(next: boolean): void {
+    if (next === running) return;
+    running = next;
+    if (next) requestAnimationFrame(tick);
+  }
+
+  document.addEventListener('visibilitychange', () => setRunning(!document.hidden));
+  const art = land.closest('svg');
+  if (art && 'IntersectionObserver' in window) {
+    new IntersectionObserver(
+      entries => setRunning(!document.hidden && entries.some(e => e.isIntersecting))
+    ).observe(art);
+  }
+
+  draw(0);
+  requestAnimationFrame(tick);
 }
 
 /**
