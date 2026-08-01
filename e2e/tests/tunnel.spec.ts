@@ -34,20 +34,21 @@ test.afterAll(() => {
   for (const child of children) child.kill('SIGTERM');
 });
 
-test('tunnels fetch, redirect, large, upload, cookie, and websocket', async ({page}) => {
+test('tunnels fetch, redirect, large, upload, cookie, sse, and websocket', async ({page}) => {
   const fixture = run('go', ['run', './e2e/fixture', '--port', String(FIXTURE_PORT)]);
-  const client = run('pnpm', ['exec', 'vite', 'preview', '--port', String(CLIENT_PORT), '--strictPort', '--host', '127.0.0.1'], `${ROOT}web`);
+  // Serve the client under /punchpage/ to mirror the GitHub Pages layout.
+  const client = run('node', ['serve.cjs', `${ROOT}web/dist`, String(CLIENT_PORT)], `${ROOT}e2e`);
   await Promise.all([
     waitForLine(fixture, /fixture listening/, 'fixture server'),
-    waitForLine(client, /127\.0\.0\.1:4188/, 'client preview')
+    waitForLine(client, /client serving/, 'client server')
   ]);
 
   const host = run('go', [
     'run', './cmd/punchpage',
     '--target', `http://127.0.0.1:${FIXTURE_PORT}`,
-    '--page', `http://127.0.0.1:${CLIENT_PORT}/`
+    '--page', `http://127.0.0.1:${CLIENT_PORT}/punchpage/`
   ]);
-  const shareLink = await waitForLine(host, /http:\/\/127\.0\.0\.1:4188\/#r=\S+/, 'punchpage host');
+  const shareLink = await waitForLine(host, /http:\/\/127\.0\.0\.1:4188\/punchpage\/#r=\S+/, 'punchpage host');
 
   await page.goto(shareLink);
   const site = page.frameLocator('#site');

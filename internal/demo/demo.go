@@ -1,6 +1,7 @@
 // Package demo serves the built-in demo site: a page that probes every
-// tunnel feature (fetch, redirects, large downloads, uploads, cookies, and
-// WebSockets) and reports "ALL CHECKS PASSED" once each probe succeeds. The
+// tunnel feature (fetch, redirects, large downloads, uploads, cookies, SSE
+// streaming, and WebSockets) and reports "ALL CHECKS PASSED" once each probe
+// succeeds. The
 // binary embeds it for `punchpage demo`, and the e2e suite serves it as the
 // test fixture.
 package demo
@@ -10,6 +11,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -102,7 +104,7 @@ footer{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);color:v
 </main>
 <script>
 (() => {
-  const names = ['page', 'api', 'redirect', 'large', 'upload', 'cookie', 'websocket'];
+  const names = ['page', 'api', 'redirect', 'large', 'upload', 'cookie', 'sse', 'websocket'];
   const state = {page: 'ok'};
   const checkIcon = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5"/></svg>';
   const crossIcon = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>';
@@ -131,6 +133,20 @@ footer{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);color:v
     update('upload', await (await fetch('/api/upload', {method: 'POST', body: upload})).text() === '100000' ? 'ok' : 'bad');
     await fetch('/api/cookie');
     update('cookie', document.cookie.includes('punchpage=direct') ? 'ok' : 'bad');
+    const events = new EventSource('/api/sse');
+    const ticks = [];
+    let firstTick = 0;
+    events.onmessage = event => {
+      if (!firstTick) firstTick = Date.now();
+      ticks.push(event.data);
+      if (ticks.length === 3) {
+        events.close();
+        // Progressive arrival (not one buffered burst) proves real streaming.
+        const streamed = Date.now() - firstTick >= 200;
+        update('sse', ticks.join() === 'tick-1,tick-2,tick-3' && streamed ? 'ok' : 'bad');
+      }
+    };
+    events.onerror = () => { if (ticks.length < 3) { events.close(); update('sse', 'bad'); } };
     const socket = new WebSocket('ws://' + location.host + '/socket');
     socket.onopen = () => socket.send('p2p-websocket');
     socket.onmessage = event => { update('websocket', event.data === 'p2p-websocket' ? 'ok' : 'bad'); socket.close(); };
@@ -168,6 +184,24 @@ func NewHandler() http.Handler {
 			return
 		}
 		fmt.Fprintf(w, "%d", len(body))
+	})
+	mux.HandleFunc("/api/sse", func(w http.ResponseWriter, r *http.Request) {
+		flusher, ok := w.(http.Flusher)
+		if !ok {
+			http.Error(w, "streaming unsupported", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "text/event-stream")
+		w.Header().Set("Cache-Control", "no-cache")
+		for i := 1; i <= 3; i++ {
+			fmt.Fprintf(w, "data: tick-%d\n\n", i)
+			flusher.Flush()
+			select {
+			case <-r.Context().Done():
+				return
+			case <-time.After(350 * time.Millisecond):
+			}
+		}
 	})
 	mux.HandleFunc("/api/cookie", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Set-Cookie", "punchpage=direct; Path=/; SameSite=Lax")

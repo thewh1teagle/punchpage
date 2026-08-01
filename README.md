@@ -58,7 +58,7 @@ The browser client source is in `web/` (`pnpm install && pnpm build`); the Pages
 
 ## Testing
 
-`go test ./...` covers the host. End-to-end tests drive a real tunnel — fixture site → host → public Nostr relays → headless Chromium — and assert fetch, redirects, large downloads, uploads, cookies, and WebSockets all work:
+`go test ./...` covers the host. End-to-end tests drive a real tunnel — fixture site → host → public Nostr relays → headless Chromium — and assert fetch, redirects, large downloads, uploads, cookies, SSE streaming, and WebSockets all work:
 
 ```sh
 just test-e2e   # or: cd e2e && pnpm install && pnpm e2e

@@ -145,6 +145,12 @@ type FrameInboundMessage = PrefixedSocketMessage<HostSocketMessage>;
     }
     return nativeFetch(input, init);
   };
+  const NativeEventSource = window.EventSource;
+  window.EventSource = class extends NativeEventSource {
+    constructor(url: string | URL, init?: EventSourceInit) {
+      super(localURL(url), init);
+    }
+  } as typeof EventSource;
   const nativeOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function (this: XMLHttpRequest, method: string, url: string | URL, ...rest: unknown[]) {
     return (nativeOpen as (...args: unknown[]) => void).call(this, method, localURL(url), ...rest);
