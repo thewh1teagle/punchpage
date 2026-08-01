@@ -44,9 +44,10 @@ self.addEventListener('message', event => {
   if (data?.type === 'version' && port) port.postMessage({version: VERSION});
   if (data?.type === 'registerTop' && data.token) {
     const source = event.source as Client | null;
-    // Only the page that owns the tunnel may claim a token: a nested tunneled
-    // frame must not be able to take over, or steal, another session's channel.
-    if (!source?.id || source.frameType !== 'top-level') return;
+    // A nested tunneled frame must not claim a token, or it could take over or
+    // steal another session's channel. Only 'nested' is rejected: browsers also
+    // report 'auxiliary' and 'none' for legitimate top-level clients.
+    if (!source?.id || source.frameType === 'nested') return;
     const held = topByToken.get(data.token);
     if (held && held !== source.id) return;
     topByToken.set(data.token, source.id);
