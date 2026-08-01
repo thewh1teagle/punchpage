@@ -37,11 +37,14 @@ powershell -c "irm https://punchpage.pages.dev/install.ps1 | iex"
 
 ## Use
 
-```sh
-punch 3000       # a port, a host:port, a full URL, or `demo`
+```console
+$ punch 3000
+PunchPage is sharing http://127.0.0.1:3000
+
+  https://punchpage.pages.dev/#r=D3q9ZlzGGR9KAZ&k=HM5qyJ8Ezcol0Q1Yh
 ```
 
-Send the printed link to anyone. Uploads, cookies, SSE and WebSockets all work. See `punch -h` for flags.
+Takes a port, a host:port, a full URL, or `demo`. Send the printed link to anyone. Uploads, cookies, SSE and WebSockets all work. See `punch -h` for flags.
 
 Using an AI assistant? Paste this:
 
