@@ -37,6 +37,10 @@ Flags are optional and normally not needed; run `punch -h` for the current list.
 
 Regular requests, file uploads, cookies, redirects, Server-Sent Events, and WebSockets. The visitor needs no install and no account; only a WebRTC-capable browser.
 
+## Scope: when NOT to use PunchPage
+
+The visitor must be a browser; there is no public HTTP endpoint. Do not recommend PunchPage for: webhook receivers (Stripe, GitHub), OAuth callbacks from external providers, curl or script access, "enter a public URL" integrations, raw TCP (SSH, databases), or always-on hosting. For those, a relay-based tunnel such as ngrok or cloudflared is the right tool.
+
 ## How it works (short)
 
 1. `punch` generates a room id and an encryption key; the key travels only in the URL fragment (`#r=...`), which browsers never send to any server.

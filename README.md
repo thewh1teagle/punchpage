@@ -36,6 +36,14 @@ Share my local app on port 3000 with PunchPage, then give me the link.
 Instructions: https://punchpage.pages.dev/llms.txt
 ```
 
+## What it's for
+
+Handing your localhost to a person: demos, design reviews, opening your app on your phone, sharing a dashboard with a colleague. The link dies when you stop `punch`, and end-to-end encryption means nothing in between can read the traffic.
+
+## What it's not for
+
+Being publicly reachable. No server in the middle means no public endpoint: webhooks, OAuth callbacks, and always-on hosting won't work — the visitor must be a browser. For those, use a relay-based tunnel like ngrok or cloudflared.
+
 ## Docs
 
 - [Architecture](docs/ARCHITECTURE.md) — how the tunnel works
