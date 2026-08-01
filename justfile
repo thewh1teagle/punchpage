@@ -6,9 +6,16 @@ default:
 build:
     go build -o punchpage ./cmd/punchpage
 
+# Run all tests (unit + end-to-end)
+test: test-go test-e2e
+
 # Run Go unit tests
-test:
+test-go:
     go test ./...
+
+# Run the full end-to-end tunnel test (fixture -> host -> relays -> headless Chromium)
+test-e2e:
+    pnpm -C e2e install && pnpm -C e2e e2e
 
 # Vet and gofmt check
 lint:
@@ -21,10 +28,6 @@ web:
 # Typecheck the browser client
 typecheck:
     pnpm -C web typecheck
-
-# Run the full end-to-end tunnel test (fixture -> host -> relays -> headless Chromium)
-e2e:
-    pnpm -C e2e install && pnpm -C e2e e2e
 
 # Share a local origin (default http://127.0.0.1:3000)
 run target="http://127.0.0.1:3000":
