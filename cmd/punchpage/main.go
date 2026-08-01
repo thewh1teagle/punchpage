@@ -11,12 +11,15 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
+	"net/http"
 	"net/url"
 	"os"
 	ossignal "os/signal"
 	"strings"
 	"syscall"
 
+	"github.com/thewh1teagle/punchpage/internal/demo"
 	"github.com/thewh1teagle/punchpage/internal/host"
 	"github.com/thewh1teagle/punchpage/internal/signaling"
 )
@@ -28,7 +31,23 @@ func main() {
 	keyText := flag.String("key", "", "existing base64url signaling key (normally generated)")
 	target := flag.String("target", "http://127.0.0.1:3000", "local HTTP origin")
 	iface := flag.String("interface", "", "optional network interface to expose to ICE")
-	flag.Parse()
+	args := os.Args[1:]
+	demoMode := len(args) > 0 && args[0] == "demo"
+	if demoMode {
+		args = args[1:]
+	}
+	flag.CommandLine.Parse(args)
+
+	if demoMode {
+		listener, err := net.Listen("tcp", "127.0.0.1:0")
+		if err != nil {
+			log.Fatal(err)
+		}
+		go http.Serve(listener, demo.NewHandler())
+		*target = "http://" + listener.Addr().String()
+		fmt.Println("\nDemo mode: sharing the built-in demo site. Open the link below to watch")
+		fmt.Println("every tunnel check pass, then send it to a friend.")
+	}
 
 	base, err := url.Parse(*target)
 	if err != nil {
@@ -75,7 +94,7 @@ func main() {
 // splitRelays parses a comma-separated relay list, keeping only wss:// URLs.
 func splitRelays(value string) []string {
 	var relays []string
-	for _, relay := range strings.Split(value, ",") {
+	for relay := range strings.SplitSeq(value, ",") {
 		if relay = strings.TrimSpace(relay); strings.HasPrefix(relay, "wss://") {
 			relays = append(relays, relay)
 		}

@@ -7,27 +7,43 @@
   <title>PunchPage</title>
   <style>
     :root {
-      --bg: #f6f8fa;
-      --panel: #ffffff;
-      --border: #d8dee4;
-      --text: #1f2328;
-      --muted: #59636e;
-      --accent: #7a9c1e;
-      --error: #b42318;
-      --error-bg: #fef3f2;
-      --error-border: #f4c7c3;
+      --bg: #f4f4f6;
+      --bg-glow: rgba(99, 102, 241, 0.07);
+      --panel: rgba(255, 255, 255, 0.82);
+      --panel-border: rgba(17, 19, 27, 0.08);
+      --text: #16181f;
+      --muted: #5d6370;
+      --faint: #868c99;
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.16);
+      --track: rgba(17, 19, 27, 0.09);
+      --error: #b3261e;
+      --error-soft: rgba(179, 38, 30, 0.09);
+      --error-border: rgba(179, 38, 30, 0.22);
+      --shadow:
+        0 1px 1px rgba(17, 19, 27, 0.03),
+        0 4px 10px rgba(17, 19, 27, 0.04),
+        0 18px 44px rgba(17, 19, 27, 0.08);
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #0d1117;
-        --panel: #161b22;
-        --border: #2d333b;
-        --text: #e6edf3;
-        --muted: #8d96a0;
-        --accent: #b7f34a;
-        --error: #ff7b72;
-        --error-bg: #2d1516;
-        --error-border: #5c2224;
+        --bg: #101116;
+        --bg-glow: rgba(129, 140, 248, 0.08);
+        --panel: rgba(24, 26, 33, 0.86);
+        --panel-border: rgba(255, 255, 255, 0.09);
+        --text: #eceef2;
+        --muted: #a3a9b7;
+        --faint: #767d8c;
+        --accent: #a5b0fb;
+        --accent-soft: rgba(129, 140, 248, 0.18);
+        --track: rgba(255, 255, 255, 0.1);
+        --error: #f2a8a3;
+        --error-soft: rgba(242, 168, 163, 0.08);
+        --error-border: rgba(242, 168, 163, 0.24);
+        --shadow:
+          0 1px 1px rgba(0, 0, 0, 0.25),
+          0 6px 16px rgba(0, 0, 0, 0.3),
+          0 24px 60px rgba(0, 0, 0, 0.42);
       }
     }
 
@@ -41,6 +57,7 @@
       color: var(--text);
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
 
     #site {
@@ -57,81 +74,127 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
+      background:
+        radial-gradient(52rem 34rem at 50% -12%, var(--bg-glow), transparent 68%),
+        var(--bg);
     }
 
     .card {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 20px;
+      gap: 22px;
       width: 100%;
-      max-width: 380px;
-      padding: 40px 32px 36px;
+      max-width: 384px;
+      box-sizing: border-box;
+      padding: 44px 36px 34px;
       background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(0, 0, 0, 0.06);
-      animation: card-in 0.35s ease-out both;
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      overflow: hidden;
+      animation: card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    /* hairline sheen along the card's top edge */
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 8%, var(--accent-soft) 50%, transparent 92%);
     }
     @keyframes card-in {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(10px) scale(0.985); }
       to { opacity: 1; transform: none; }
     }
 
     .wordmark {
-      font-size: 15px;
-      font-weight: 650;
-      letter-spacing: 0.04em;
-      color: var(--muted);
-      text-transform: uppercase;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: var(--text);
     }
     .wordmark b {
+      font-weight: 600;
       color: var(--accent);
-      font-weight: 650;
     }
 
+    .indicator {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+    }
     .spinner {
-      width: 36px;
-      height: 36px;
+      box-sizing: border-box;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
-      border: 3px solid var(--border);
+      border: 2.5px solid var(--track);
       border-top-color: var(--accent);
-      animation: spin 0.9s linear infinite;
+      animation: spin 0.85s cubic-bezier(0.45, 0.15, 0.55, 0.85) infinite;
+    }
+    /* soft halo behind the spinner */
+    .indicator::before {
+      content: "";
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-soft), transparent 70%);
+      animation: breathe 2.6s ease-in-out infinite;
     }
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    @keyframes breathe {
+      0%, 100% { opacity: 0.55; }
+      50% { opacity: 1; }
+    }
     @media (prefers-reduced-motion: reduce) {
-      .spinner { animation-duration: 2.4s; }
+      .spinner { animation-duration: 2.4s; animation-timing-function: linear; }
+      .indicator::before { animation: none; }
       .card { animation: none; }
     }
 
     .error-icon {
       display: none;
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       color: var(--error);
     }
 
     #status-text {
       margin: 0;
       font-size: 15px;
-      line-height: 1.55;
+      line-height: 1.6;
       color: var(--muted);
       overflow-wrap: anywhere;
     }
 
     .hint {
-      margin: 0;
+      margin: 6px 0 0;
+      padding-top: 18px;
+      align-self: stretch;
+      border-top: 1px solid var(--panel-border);
       font-size: 12.5px;
-      color: var(--muted);
-      opacity: 0.75;
+      letter-spacing: 0.01em;
+      color: var(--faint);
     }
 
     #status.error .card {
       border-color: var(--error-border);
-      background: var(--error-bg);
+    }
+    #status.error .card::before {
+      background: linear-gradient(90deg, transparent 8%, var(--error-border) 50%, transparent 92%);
+    }
+    #status.error .indicator::before {
+      background: radial-gradient(circle, var(--error-soft), transparent 70%);
+      animation: none;
     }
     #status.error .spinner { display: none; }
     #status.error .error-icon { display: block; }
@@ -146,12 +209,14 @@
   <div id="status">
     <div class="card">
       <div class="wordmark">Punch<b>Page</b></div>
-      <div class="spinner" aria-hidden="true"></div>
-      <svg class="error-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="9.25"></circle>
-        <line x1="12" y1="7.5" x2="12" y2="13"></line>
-        <circle cx="12" cy="16.5" r="0.4" fill="currentColor"></circle>
-      </svg>
+      <div class="indicator">
+        <div class="spinner" aria-hidden="true"></div>
+        <svg class="error-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9.25"></circle>
+          <line x1="12" y1="7.5" x2="12" y2="13"></line>
+          <circle cx="12" cy="16.5" r="0.4" fill="currentColor"></circle>
+        </svg>
+      </div>
       <p id="status-text" role="status" aria-live="polite">Opening the direct connection…</p>
       <p class="hint">Peer-to-peer over WebRTC — no server in between</p>
     </div>

@@ -16,13 +16,32 @@ Send that URL to a friend. Their browser loads a static client from GitHub Pages
 
 Nothing in the middle sees your site: the room id and key live in the URL fragment (never sent to GitHub Pages), signaling is AES-256-GCM encrypted through public Nostr relays, and site bytes flow only between the two peers.
 
-## Install and use
+## Install
 
-Requires Go 1.25+:
+macOS / Linux:
 
 ```sh
-go build -o punchpage ./cmd/punchpage
-./punchpage --target http://127.0.0.1:3000
+curl -fsSL https://raw.githubusercontent.com/thewh1teagle/punchpage/main/scripts/install.sh | sh
+```
+
+Windows (PowerShell):
+
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/thewh1teagle/punchpage/main/scripts/install.ps1 | iex"
+```
+
+Or with Go 1.25+: `go install github.com/thewh1teagle/punchpage/cmd/punchpage@latest`
+
+## Use
+
+```sh
+punchpage --target http://127.0.0.1:3000
+```
+
+Or try it instantly with the built-in demo site — open the printed link (or send it to a friend) and watch every tunnel check pass:
+
+```sh
+punchpage demo
 ```
 
 Flags:
