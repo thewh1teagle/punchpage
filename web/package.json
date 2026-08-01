@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.sw.json"
   },
   "dependencies": {
+    "highlight.js": "^11.11.1",
     "nostr-tools": "2.24.1"
   },
   "devDependencies": {

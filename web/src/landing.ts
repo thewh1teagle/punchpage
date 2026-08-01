@@ -1,5 +1,12 @@
 /** Landing page shown at the root URL, when there is no share fragment to open. */
 
+import hljs from 'highlight.js/lib/core';
+import bash from 'highlight.js/lib/languages/bash';
+import powershell from 'highlight.js/lib/languages/powershell';
+
+hljs.registerLanguage('bash', bash);
+hljs.registerLanguage('powershell', powershell);
+
 const INSTALL_COMMANDS = {
   unix: 'curl -fsSL https://punchpage.pages.dev/install.sh | sh',
   windows: 'powershell -c "irm https://punchpage.pages.dev/install.ps1 | iex"'
@@ -31,6 +38,7 @@ export function showLanding(): void {
   window.addEventListener('hashchange', () => location.reload(), {once: true});
 
   wireScrollLinks();
+  wireCopyButton('#copy-prompt', '#agent-prompt');
 
   const command = document.querySelector('#install-command') as HTMLElement | null;
   const unixTab = document.querySelector('#tab-unix') as HTMLButtonElement | null;
@@ -43,23 +51,25 @@ export function showLanding(): void {
 
   function select(next: Platform): void {
     platform = next;
-    command!.textContent = INSTALL_COMMANDS[next];
+    const highlighted = hljs.highlight(INSTALL_COMMANDS[next], {
+      language: next === 'windows' ? 'powershell' : 'bash'
+    }).value;
+    // hljs leaves URLs untokenized, and they are the part worth drawing the eye to.
+    command!.innerHTML = highlighted.replace(
+      /https?:\/\/[^\s<"]+/g,
+      url => `<span class="hljs-link">${url}</span>`
+    );
     unixTab!.setAttribute('aria-pressed', String(next === 'unix'));
     windowsTab!.setAttribute('aria-pressed', String(next === 'windows'));
-  }
-
-  function setCopyLabel(text: string, copied: boolean): void {
-    copyButton!.textContent = text;
-    copyButton!.classList.toggle('copied', copied);
-    clearTimeout(copiedTimer);
-    if (copied) copiedTimer = setTimeout(() => setCopyLabel('Copy', false), COPIED_RESET_MS);
   }
 
   unixTab.addEventListener('click', () => select('unix'));
   windowsTab.addEventListener('click', () => select('windows'));
   copyButton.addEventListener('click', () => {
     const text = INSTALL_COMMANDS[platform];
-    void copyText(text).then(ok => setCopyLabel(ok ? 'Copied' : 'Press ⌘/Ctrl+C', ok));
+    void copyText(text, command).then(ok => {
+      copiedTimer = markCopied(copyButton!, ok, copiedTimer);
+    });
   });
 
   select(platform);
@@ -81,19 +91,48 @@ function wireScrollLinks(): void {
   }
 }
 
-/** Copies text via the async clipboard API, falling back to selecting the command. */
-async function copyText(text: string): Promise<boolean> {
+/** Wires a copy button to a static text element, mirroring the install button's feedback. */
+function wireCopyButton(buttonSelector: string, sourceSelector: string): void {
+  const button = document.querySelector(buttonSelector) as HTMLButtonElement | null;
+  const source = document.querySelector(sourceSelector) as HTMLElement | null;
+  if (!button || !source) return;
+
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  button.addEventListener('click', () => {
+    void copyText(source.textContent || '', source).then(ok => {
+      timer = markCopied(button, ok, timer);
+    });
+  });
+}
+
+/** Flips a copy button into its checkmark state, or hints at manual copy on failure. */
+function markCopied(
+  button: HTMLButtonElement,
+  ok: boolean,
+  timer: ReturnType<typeof setTimeout> | undefined
+): ReturnType<typeof setTimeout> | undefined {
+  button.classList.toggle('copied', ok);
+  button.title = ok ? 'Copied' : 'Press ⌘/Ctrl+C to copy the selected text';
+  clearTimeout(timer);
+  if (!ok) return undefined;
+  return setTimeout(() => {
+    button.classList.remove('copied');
+    button.title = 'Copy';
+  }, COPIED_RESET_MS);
+}
+
+/** Copies text via the async clipboard API, falling back to selecting the source element. */
+async function copyText(text: string, fallback: Element | null): Promise<boolean> {
   try {
     if (navigator.clipboard?.writeText) {
       await navigator.clipboard.writeText(text);
       return true;
     }
   } catch { /* denied or unavailable — fall through to selection */ }
-  const command = document.querySelector('#install-command');
   const selection = window.getSelection();
-  if (command && selection) {
+  if (fallback && selection) {
     const range = document.createRange();
-    range.selectNodeContents(command);
+    range.selectNodeContents(fallback);
     selection.removeAllRanges();
     selection.addRange(range);
   }
