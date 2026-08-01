@@ -1,3 +1,11 @@
 /*
   Link: </llms.txt>; rel="alternate"; type="text/markdown"
   X-Llms-Txt: /llms.txt
+
+# Serve installers as text: irm returns a byte[] for octet-stream, which
+# breaks `irm ... | iex` with an empty-string Invoke-Expression error.
+/install.ps1
+  Content-Type: text/plain; charset=utf-8
+
+/install.sh
+  Content-Type: text/plain; charset=utf-8

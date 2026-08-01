@@ -12,7 +12,7 @@ macOS / Linux:
 
 Windows (PowerShell):
 
-    powershell -c "irm https://punchpage.pages.dev/install.ps1 | iex"
+    powershell -ExecutionPolicy ByPass -c "irm https://punchpage.pages.dev/install.ps1 | iex"
 
 The installer places a single self-contained binary named `punch` on PATH. No Docker, no runtime dependencies. To install manually instead, download a release from https://github.com/thewh1teagle/punchpage/releases and put `punch` on PATH.
 

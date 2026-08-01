@@ -1,5 +1,5 @@
 # PunchPage installer for Windows.
-#   powershell -c "irm https://punchpage.pages.dev/install.ps1 | iex"
+#   powershell -ExecutionPolicy ByPass -c "irm https://punchpage.pages.dev/install.ps1 | iex"
 $ErrorActionPreference = "Stop"
 
 $repo = "thewh1teagle/punchpage"

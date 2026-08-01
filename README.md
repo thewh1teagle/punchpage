@@ -32,7 +32,7 @@ curl -fsSL https://punchpage.pages.dev/install.sh | sh
 Windows (PowerShell):
 
 ```powershell
-powershell -c "irm https://punchpage.pages.dev/install.ps1 | iex"
+powershell -ExecutionPolicy ByPass -c "irm https://punchpage.pages.dev/install.ps1 | iex"
 ```
 
 ## Use
