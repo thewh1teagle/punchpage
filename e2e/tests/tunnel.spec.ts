@@ -18,7 +18,8 @@ function waitForLine(child: ChildProcess, pattern: RegExp, label: string): Promi
   return new Promise((resolve, reject) => {
     let buffer = '';
     const onData = (chunk: Buffer) => {
-      buffer += chunk.toString();
+      // Vite styles its output with ANSI escapes; strip them so patterns match.
+      buffer += chunk.toString().replace(/\x1b\[[0-9;]*m/g, '');
       const match = buffer.match(pattern);
       if (match) resolve(match[0]);
     };
