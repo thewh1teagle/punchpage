@@ -1,13 +1,13 @@
 // Serves the built web client under a /punchpage/ path prefix, mirroring the
 // GitHub Pages layout so scope-escape bugs (absolute URLs leaving the service
-// worker scope) reproduce in e2e. Usage: node serve.cjs <distDir> <port>
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+// worker scope) reproduce in e2e. Usage: node serve.ts <distDir> <port>
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const [rootArg, port] = process.argv.slice(2);
 const root = path.resolve(rootArg);
-const types = {
+const types: Record<string, string> = {
   '.html': 'text/html',
   '.js': 'text/javascript',
   '.css': 'text/css',
@@ -16,7 +16,7 @@ const types = {
 
 http
   .createServer((req, res) => {
-    const url = new URL(req.url, 'http://localhost');
+    const url = new URL(req.url ?? '/', 'http://localhost');
     if (!url.pathname.startsWith('/punchpage/')) {
       res.writeHead(404);
       res.end('not under /punchpage/');

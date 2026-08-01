@@ -38,7 +38,7 @@ test.afterAll(() => {
 async function startStack(fixturePort: number, clientPort: number): Promise<string> {
   const fixture = run('go', ['run', './e2e/fixture', '--port', String(fixturePort)]);
   // Serve the client under /punchpage/ to mirror the production path layout.
-  const client = run('node', ['serve.cjs', `${ROOT}web/dist`, String(clientPort)], `${ROOT}e2e`);
+  const client = run('node', ['serve.ts', `${ROOT}web/dist`, String(clientPort)], `${ROOT}e2e`);
   await Promise.all([
     waitForLine(fixture, /fixture listening/, 'fixture server'),
     waitForLine(client, /client serving/, 'client server')
