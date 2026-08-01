@@ -2,7 +2,7 @@
 
 **Like ngrok, but peer-to-peer.** Share a local web app through a plain browser URL — no server, no account, end-to-end encrypted.
 
-![PunchPage demo](.github/assets/demo.gif)
+![PunchPage demo](.github/assets/hero.gif)
 
 ## Install
 
