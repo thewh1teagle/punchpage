@@ -3,16 +3,160 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="light dark">
   <title>PunchPage</title>
   <style>
-    html,body,#site{border:0;height:100%;margin:0;padding:0;width:100%}#site{display:none}
-    #status{align-items:center;background:#0d1117;color:#b7f34a;display:flex;font:16px system-ui;height:100%;justify-content:center;text-align:center}
+    :root {
+      --bg: #f6f8fa;
+      --panel: #ffffff;
+      --border: #d8dee4;
+      --text: #1f2328;
+      --muted: #59636e;
+      --accent: #7a9c1e;
+      --error: #b42318;
+      --error-bg: #fef3f2;
+      --error-border: #f4c7c3;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --panel: #161b22;
+        --border: #2d333b;
+        --text: #e6edf3;
+        --muted: #8d96a0;
+        --accent: #b7f34a;
+        --error: #ff7b72;
+        --error-bg: #2d1516;
+        --error-border: #5c2224;
+      }
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #site {
+      display: none;
+      border: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #status {
+      box-sizing: border-box;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 380px;
+      padding: 40px 32px 36px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(0, 0, 0, 0.06);
+      animation: card-in 0.35s ease-out both;
+    }
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .wordmark {
+      font-size: 15px;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .wordmark b {
+      color: var(--accent);
+      font-weight: 650;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .spinner { animation-duration: 2.4s; }
+      .card { animation: none; }
+    }
+
+    .error-icon {
+      display: none;
+      width: 42px;
+      height: 42px;
+      color: var(--error);
+    }
+
+    #status-text {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .hint {
+      margin: 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      opacity: 0.75;
+    }
+
+    #status.error .card {
+      border-color: var(--error-border);
+      background: var(--error-bg);
+    }
+    #status.error .spinner { display: none; }
+    #status.error .error-icon { display: block; }
+    #status.error #status-text {
+      color: var(--error);
+      font-weight: 500;
+    }
+    #status.error .hint { display: none; }
   </style>
 </head>
 <body>
-  <div id="status">Opening the direct connection…</div>
+  <div id="status">
+    <div class="card">
+      <div class="wordmark">Punch<b>Page</b></div>
+      <div class="spinner" aria-hidden="true"></div>
+      <svg class="error-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9.25"></circle>
+        <line x1="12" y1="7.5" x2="12" y2="13"></line>
+        <circle cx="12" cy="16.5" r="0.4" fill="currentColor"></circle>
+      </svg>
+      <p id="status-text" role="status" aria-live="polite">Opening the direct connection…</p>
+      <p class="hint">Peer-to-peer over WebRTC — no server in between</p>
+    </div>
+  </div>
   <iframe id="site" sandbox="allow-downloads allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
-  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

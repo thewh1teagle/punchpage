@@ -1,5 +1,6 @@
 /punchpage
 /web/node_modules/
 /web/dist/
+/docs/
 .DS_Store
 *.log
