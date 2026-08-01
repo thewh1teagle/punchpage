@@ -25,7 +25,7 @@ import (
 )
 
 func main() {
-	page := flag.String("page", "https://thewh1teagle.github.io/punchpage/", "GitHub Pages browser URL")
+	page := flag.String("page", "https://punchpage.pages.dev/", "browser client URL")
 	relayList := flag.String("relays", "wss://relay.damus.io,wss://nos.lol,wss://relay.primal.net", "comma-separated public Nostr relays")
 	room := flag.String("room", "", "existing room identifier (normally generated)")
 	keyText := flag.String("key", "", "existing base64url signaling key (normally generated)")

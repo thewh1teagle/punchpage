@@ -1,77 +1,38 @@
 # PunchPage
 
-**Like ngrok, but peer-to-peer.**
+**Like ngrok, but peer-to-peer.** Share a local web app through a plain browser URL — no server, no account, end-to-end encrypted.
 
-Share a local web app through a plain browser URL — no server, account, or router configuration.
-
-```console
-$ punchpage --target http://127.0.0.1:3000
-
-PunchPage is sharing http://127.0.0.1:3000
-
-  https://thewh1teagle.github.io/punchpage/#r=...&k=...&relays=...
-```
-
-Send that URL to a friend. Their browser loads a static client from GitHub Pages and connects straight to your machine over WebRTC — requests, uploads, cookies, WebSockets, and Vite HMR all work.
-
-Nothing in the middle sees your site: the room id and key live in the URL fragment (never sent to GitHub Pages), signaling is AES-256-GCM encrypted through public Nostr relays, and site bytes flow only between the two peers.
+![PunchPage demo](.github/assets/demo.gif)
 
 ## Install
 
 macOS / Linux:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/thewh1teagle/punchpage/main/scripts/install.sh | sh
+curl -fsSL https://punchpage.pages.dev/install.sh | sh
 ```
 
 Windows (PowerShell):
 
 ```powershell
-powershell -c "irm https://raw.githubusercontent.com/thewh1teagle/punchpage/main/scripts/install.ps1 | iex"
+powershell -c "irm https://punchpage.pages.dev/install.ps1 | iex"
 ```
-
-Or with Go 1.25+: `go install github.com/thewh1teagle/punchpage/cmd/punchpage@latest`
 
 ## Use
 
 ```sh
-punchpage --target http://127.0.0.1:3000
+punchpage --target http://127.0.0.1:3000   # share a local app
+punchpage demo                             # or try the built-in demo site
 ```
 
-Or try it instantly with the built-in demo site — open the printed link (or send it to a friend) and watch every tunnel check pass:
+Send the printed link to anyone. Their browser connects straight to your machine over WebRTC — requests, uploads, cookies, SSE, and WebSockets all work. See `punchpage -h` for all flags.
 
-```sh
-punchpage demo
-```
+## Docs
 
-Flags:
-
-```text
---target      local HTTP origin to share (default http://127.0.0.1:3000)
---interface   optional network interface to expose to ICE (e.g. en0)
---page        browser client URL (default https://thewh1teagle.github.io/punchpage/)
---relays      comma-separated wss:// Nostr relays
---room, --key resume an existing share URL instead of generating a new one
-```
-
-The browser client source is in `web/` (`pnpm install && pnpm build`); the Pages workflow builds and deploys it automatically.
-
-## Testing
-
-`go test ./...` covers the host. End-to-end tests drive a real tunnel — fixture site → host → public Nostr relays → headless Chromium — and assert fetch, redirects, large downloads, uploads, cookies, SSE streaming, and WebSockets all work:
-
-```sh
-just test-e2e   # or: cd e2e && pnpm install && pnpm e2e
-```
-
-A `justfile` collects the common tasks: `just build`, `just test`, `just lint`, `just web`, `just demo`, `just run` — see `just --list`.
-
-## Security and limitations
-
-- Anyone with the URL can reach the shared site while the host runs. Treat it as a password.
-- No TURN or relay fallback: networks that block peer-to-peer WebRTC fail rather than degrade.
-- Public Nostr relays and STUN servers (Google, Cloudflare) are best-effort third parties.
-- The client is served under `/punchpage/`; path rewriting handles most apps, but apps that inspect the raw pathname may misbehave.
+- [Architecture](docs/ARCHITECTURE.md) — how the tunnel works
+- [Security](docs/SECURITY.md) — threat model and limitations
+- [Building](docs/BUILDING.md) — build and test from source
+- [Deployment](docs/DEPLOYMENT.md) — hosting, secrets, and releases
 
 ## License
 

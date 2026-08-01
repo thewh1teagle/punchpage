@@ -1,5 +1,5 @@
 # PunchPage installer for Windows.
-#   powershell -c "irm https://raw.githubusercontent.com/thewh1teagle/punchpage/main/scripts/install.ps1 | iex"
+#   powershell -c "irm https://punchpage.pages.dev/install.ps1 | iex"
 $ErrorActionPreference = "Stop"
 
 $repo = "thewh1teagle/punchpage"

@@ -1,6 +1,6 @@
 #!/bin/sh
 # PunchPage installer for macOS and Linux.
-#   curl -fsSL https://raw.githubusercontent.com/thewh1teagle/punchpage/main/scripts/install.sh | sh
+#   curl -fsSL https://punchpage.pages.dev/install.sh | sh
 set -eu
 
 REPO="thewh1teagle/punchpage"

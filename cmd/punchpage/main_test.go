@@ -6,7 +6,7 @@ import (
 )
 
 func TestMakeShareURLKeepsSecretInFragment(t *testing.T) {
-	result, err := makeShareURL("https://thewh1teagle.github.io/punchpage/", "room", "secret", []string{"wss://nos.lol"})
+	result, err := makeShareURL("https://punchpage.pages.dev/", "room", "secret", []string{"wss://nos.lol"})
 	if err != nil {
 		t.Fatal(err)
 	}
