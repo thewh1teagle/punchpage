@@ -1,0 +1,13 @@
+{
+  "name": "punchpage-e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "e2e": "pnpm -C ../web install && pnpm -C ../web build && playwright install chromium && playwright test",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "typescript": "5.9.3"
+  }
+}

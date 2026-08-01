@@ -37,6 +37,16 @@ Flags:
 
 The browser client source is in `web/` (`pnpm install && pnpm build`); the Pages workflow builds and deploys it automatically.
 
+## Testing
+
+`go test ./...` covers the host. End-to-end tests drive a real tunnel — fixture site → host → public Nostr relays → headless Chromium — and assert fetch, redirects, large downloads, uploads, cookies, and WebSockets all work:
+
+```sh
+just e2e   # or: cd e2e && pnpm install && pnpm e2e
+```
+
+A `justfile` collects the common tasks: `just build`, `just test`, `just lint`, `just web`, `just e2e`, `just run`.
+
 ## Security and limitations
 
 - Anyone with the URL can reach the shared site while the host runs. Treat it as a password.
