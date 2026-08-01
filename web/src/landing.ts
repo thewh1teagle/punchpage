@@ -9,7 +9,7 @@ hljs.registerLanguage('powershell', powershell);
 
 const INSTALL_COMMANDS = {
   unix: 'curl -fsSL https://punchpage.pages.dev/install.sh | sh',
-  windows: 'powershell -ExecutionPolicy ByPass -c "irm https://punchpage.pages.dev/install.ps1 | iex"'
+  windows: 'irm https://punchpage.pages.dev/install.ps1 | iex'
 } as const;
 
 type Platform = keyof typeof INSTALL_COMMANDS;

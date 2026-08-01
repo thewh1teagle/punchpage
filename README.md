@@ -29,9 +29,15 @@ macOS / Linux:
 curl -fsSL https://punchpage.pages.dev/install.sh | sh
 ```
 
-Windows (PowerShell):
+Windows, from PowerShell:
 
 ```powershell
+irm https://punchpage.pages.dev/install.ps1 | iex
+```
+
+Windows, from cmd:
+
+```bat
 powershell -ExecutionPolicy ByPass -c "irm https://punchpage.pages.dev/install.ps1 | iex"
 ```
 
