@@ -12,7 +12,7 @@ Run `just` to list all recipes (build, lint, test, e2e, demo, …). Without `jus
 
 ## Layout
 
-Go host in `cmd/punch` + `internal/` (the binary is `punch`), TypeScript client in `web/` (Vite, strict TS), e2e suite in `e2e/`. The client deploys to GitHub Pages automatically on pushes touching `web/`.
+Go host in `cmd/punch` + `internal/` (the binary is `punch`), TypeScript client in `web/` (Vite, strict TS), e2e suite in `e2e/`. The client deploys to Cloudflare Pages (and a GitHub Pages mirror) automatically on pushes touching `web/`.
 
 ## Releasing
 

@@ -42,17 +42,34 @@ self.addEventListener('message', event => {
   const data = event.data as {type?: string; token?: string} | undefined;
   const port = event.ports[0];
   if (data?.type === 'version' && port) port.postMessage({version: VERSION});
-  if (data?.type === 'registerTop' && data.token && (event.source as Client | null)?.id) {
-    topByToken.set(data.token, (event.source as Client).id);
+  if (data?.type === 'registerTop' && data.token) {
+    const source = event.source as Client | null;
+    // Only the page that owns the tunnel may claim a token: a nested tunneled
+    // frame must not be able to take over, or steal, another session's channel.
+    if (!source?.id || source.frameType !== 'top-level') return;
+    const held = topByToken.get(data.token);
+    if (held && held !== source.id) return;
+    topByToken.set(data.token, source.id);
     port?.postMessage({ok: true});
   }
 });
+
+/** Files this origin serves in its own right; they must never be tunnelled. */
+const SITE_FILES = new Set([
+  'sw.js',
+  '__punchpage_runtime__.js',
+  'favicon.svg',
+  'llms.txt',
+  'install.sh',
+  'install.ps1',
+  'robots.txt'
+]);
 
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin || !url.pathname.startsWith(scopePath)) return;
   const relative = url.pathname.slice(scopePath.length);
-  if (relative === 'sw.js' || relative === '__punchpage_runtime__.js' || relative.startsWith('assets/')) return;
+  if (SITE_FILES.has(relative) || relative.startsWith('assets/')) return;
   event.respondWith(route(event, url, relative));
 });
 

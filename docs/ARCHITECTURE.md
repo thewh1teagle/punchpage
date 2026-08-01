@@ -34,4 +34,4 @@ PunchPage tunnels a local HTTP origin to any browser with zero infrastructure of
 
 ## Path prefix
 
-The client serves tunneled pages under `/punchpage/`, so absolute URLs in apps would escape the service-worker scope. The host rewrites HTML/JS/CSS on the way through, and the injected runtime patches the network APIs at runtime. Apps that inspect the raw pathname may still misbehave; frameworks with a root-path setting (e.g. Gradio's `root_path`) can side-step rewriting entirely.
+The client serves tunneled pages under a virtual `__punchpage__/<token>/` prefix inside its own scope, so absolute URLs in apps would escape it. The host rewrites HTML/JS/CSS on the way through, and the injected runtime patches the network APIs at runtime. Apps that inspect the raw pathname may still misbehave; frameworks with a root-path setting (e.g. Gradio's `root_path`) can side-step rewriting entirely.
