@@ -268,13 +268,17 @@
     }
     .hero h1 {
       margin: 0;
-      max-width: 14ch;
+      max-width: 15ch;
       font-size: clamp(42px, 9vw, 76px);
       font-weight: 800;
       line-height: 1.02;
       letter-spacing: -0.04em;
       color: var(--text);
+      /* Even line lengths instead of a long line and an orphan. */
+      text-wrap: balance;
     }
+    /* Keeps hyphenated compounds off two lines, e.g. "peer-to-peer". */
+    .nowrap { white-space: nowrap; }
     .hero-sub {
       margin: 26px 0 0;
       max-width: 34ch;
@@ -282,6 +286,7 @@
       line-height: 1.5;
       letter-spacing: -0.011em;
       color: var(--accent);
+      text-wrap: balance;
     }
     .hero-lede {
       margin: 18px 0 0;
@@ -297,10 +302,13 @@
       gap: 12px;
       margin-top: 34px;
     }
+    /* Match the two calls to action so neither reads as the smaller option. */
+    .hero-actions .btn { min-width: 186px; }
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 8px;
       font: inherit;
       font-size: 15px;
       font-weight: 600;
@@ -325,6 +333,11 @@
     .btn-ghost:hover {
       border-color: var(--accent);
       color: var(--accent);
+    }
+    .btn-icon {
+      flex: none;
+      width: 17px;
+      height: 17px;
     }
 
     /* --- section headings --- */
@@ -657,12 +670,12 @@
       </header>
 
       <section class="hero">
-        <h1>Like ngrok, but peer-to-peer.</h1>
+        <h1>Like ngrok, but <span class="nowrap">peer-to-peer.</span></h1>
         <p class="hero-sub">Share a local web app through a plain browser URL.</p>
         <p class="hero-lede">No server sits in the middle, there is nothing to sign up for, and the whole session is end-to-end encrypted.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#install" data-scroll>Get started</a>
-          <a class="btn btn-ghost" href="https://github.com/thewh1teagle/punchpage" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+          <a class="btn btn-primary" href="#install" data-scroll><svg class="btn-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4l3.2 3.2L3 10.4"/><path d="M8.4 11.6h4.6"/></svg>Get started</a>
+          <a class="btn btn-ghost" href="https://github.com/thewh1teagle/punchpage" target="_blank" rel="noopener noreferrer"><svg class="btn-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>View on GitHub</a>
         </div>
       </section>
 
@@ -758,7 +771,6 @@ Instructions: <span class="hljs-link">https://punchpage.pages.dev/llms.txt</span
       <footer class="landing-footer">
         <a href="https://github.com/thewh1teagle/punchpage" target="_blank" rel="noopener noreferrer">GitHub</a>
         <a href="https://github.com/thewh1teagle/punchpage/tree/main/docs" target="_blank" rel="noopener noreferrer">Docs</a>
-        <a href="/llms.txt">llms.txt</a>
         <span class="footer-note">Open source · MIT</span>
       </footer>
     </div>
